@@ -7,7 +7,7 @@ from tqdm import tqdm
 from datetime import datetime, timedelta
 import configparser
 
-def load_api_key(section="news_api",config_path='yfinance/pipeline.conf'):
+def load_api_key(section="news_api",config_path='pipeline.conf'):
     """
     설정 파일에서 API 키를 불러옵니다.
     """
@@ -60,13 +60,14 @@ def get_news_from_api(query, start_date, end_date):
         print(f"NewsAPI 요청 중 오류 발생: {e}")
         return None
 
-def process_and_save_news(symbol, name, articles, output_dir):
+def process_and_save_news(symbol, name, articles):
     """
-    수집된 뉴스 기사 목록을 DataFrame으로 변환하고 CSV 파일로 저장합니다.
+    수집된 뉴스 기사 목록을 DataFrame으로 변환하여 반환합니다.
+    이 함수는 더 이상 파일 저장을 담당하지 않습니다.
     """
     if not articles:
         print(f"[{symbol}] {name}에 대한 뉴스가 없습니다.")
-        return False
+        return None
         
     news_list = []
     for article in articles:
@@ -79,22 +80,20 @@ def process_and_save_news(symbol, name, articles, output_dir):
         })
     
     df_news = pd.DataFrame(news_list)
-    file_path = os.path.join(output_dir, f'{symbol}_news_urls.csv')
-    df_news.to_csv(file_path, index=False, encoding='utf-8-sig')
-    
-    print(f"[{symbol}] {name}의 뉴스 URL이 {file_path}에 저장되었습니다.")
-    return True
+    return df_news
 
 def fetch_and_save_news_urls(stock_list_df, days=30):
     """
-    주요 프로세스를 관리하는 메인 함수.
-    각 기업에 대한 뉴스 URL을 수집하고 CSV로 저장합니다.
+    모든 기업에 대한 뉴스 URL을 수집하고 하나의 CSV로 저장합니다.
     """
-    output_dir = 'data/nasdaq_news_urls'
+    output_dir = 'data'
     os.makedirs(output_dir, exist_ok=True)
     
     end_date = datetime.now()
     start_date = end_date - timedelta(days=days)
+
+    # 모든 뉴스 데이터를 담을 빈 DataFrame을 생성합니다.
+    all_news_df = pd.DataFrame()
 
     print(f"총 {len(stock_list_df)}개 나스닥 기업의 뉴스를 수집합니다. 기간: {days}일")
 
@@ -105,9 +104,20 @@ def fetch_and_save_news_urls(stock_list_df, days=30):
         articles = get_news_from_api(name, start_date, end_date)
         
         if articles is not None:
-            process_and_save_news(symbol, name, articles, output_dir)
+            df_news = process_and_save_news(symbol, name, articles)
+            if df_news is not None:
+                # 개별 기업의 뉴스 데이터를 전체 데이터프레임에 추가합니다.
+                all_news_df = pd.concat([all_news_df, df_news], ignore_index=True)
         
         time.sleep(1) # API 호출 빈도 제어
+
+    # 모든 데이터 수집 후 하나의 CSV 파일로 저장
+    if not all_news_df.empty:
+        file_path = os.path.join(output_dir, 'nasdaq_news_all.csv')
+        all_news_df.to_csv(file_path, index=False, encoding='utf-8-sig')
+        print(f"\n모든 나스닥 기업의 뉴스 URL이 {file_path}에 성공적으로 저장되었습니다.")
+    else:
+        print("\n저장할 뉴스 데이터가 없습니다.")
 
 if __name__ == '__main__':
     NEWS_API_KEY = load_api_key()
@@ -118,8 +128,8 @@ if __name__ == '__main__':
         nasdaq_companies_df = get_nasdaq_companies(limit=5)
         
         if not nasdaq_companies_df.empty:
-            fetch_and_save_news_urls(nasdaq_companies_df, days=15)
+            fetch_and_save_news_urls(nasdaq_companies_df, days=5)
         else:
             print("나스닥 기업 목록을 가져오는 데 실패했습니다.")
-        
+            
     print("모든 작업이 완료되었습니다.")
