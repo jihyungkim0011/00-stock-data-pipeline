@@ -7,28 +7,24 @@ class StockService:
     """
     df_stocks: pd.DataFrame
 
-    def __init__(self, data_file_path: str = "data/nasdaq_all_stocks.csv"):
+    def __init__(self, data_file_path: str = "nasdaq_all_stocks.csv"):
         """
         서비스 초기화 시 CSV 파일을 로드합니다.
         """
-        # 현재 파일의 디렉토리를 기준으로 data 폴더의 경로를 구성합니다.
-        # os.path.dirname(__file__)은 현재 파일(stock_service.py)의 디렉토리
-        # os.path.join을 사용하여 OS에 독립적인 경로를 생성합니다.
-        # ".."는 상위 디렉토리 (app 폴더 -> project_root)
-        # "data"는 project_root의 data 폴더
-        absolute_data_path = data_file_path
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        csv_path = os.path.join(script_dir, "..","..","..", "data", data_file_path)
         
         self.df_stocks = pd.DataFrame() # 초기 빈 DataFrame 설정
 
         try:
-            self.df_stocks = pd.read_csv(absolute_data_path)
+            self.df_stocks = pd.read_csv(csv_path)
             # 'Date' 컬럼을 datetime 객체로 변환하여 날짜 기반 필터링에 용이하게 함
             self.df_stocks['Date'] = pd.to_datetime(self.df_stocks['Date'])
             # 'Symbol' 컬럼을 대문자로 통일하여 검색 일관성 유지
             self.df_stocks['Symbol'] = self.df_stocks['Symbol'].str.upper()
-            print(f"INFO: {absolute_data_path} 파일 로드 성공. 총 {len(self.df_stocks)}개 데이터.")
+            print(f"INFO: {csv_path} 파일 로드 성공. 총 {len(self.df_stocks)}개 데이터.")
         except FileNotFoundError:
-            print(f"경고: {absolute_data_path} 파일을 찾을 수 없습니다. 서비스는 데이터 없이 실행됩니다.")
+            print(f"경고: {csv_path} 파일을 찾을 수 없습니다. 서비스는 데이터 없이 실행됩니다.")
         except KeyError as e:
             print(f"경고: CSV 파일에 필요한 컬럼이 없습니다: {e}. 'Symbol' 또는 'Date' 컬럼 이름을 확인하세요.")
         except Exception as e:

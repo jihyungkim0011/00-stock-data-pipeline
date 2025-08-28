@@ -8,12 +8,7 @@ app = FastAPI()
 
 # StockService 인스턴스를 전역으로 생성합니다.
 # 애플리케이션 시작 시 한 번만 CSV 파일을 로드하게 됩니다.
-# 현재 파일(main.py)의 디렉토리를 기준으로 data 폴더의 경로를 구성합니다.
-# os.path.dirname(__file__)은 현재 파일(main.py)의 디렉토리
-# "data/nasdaq_all_stocks.csv"는 project_root의 data 폴더에 직접 접근
-# (stock_service.py에서 이미 상대경로 처리했으므로, 여기서는 기본값 사용)
 global_stock_service = StockService() 
-
 
 # 의존성 주입을 위한 헬퍼 함수
 # 이 함수는 각 엔드포인트가 호출될 때마다 StockService 인스턴스를 제공합니다.
@@ -65,5 +60,4 @@ def get_stock_by_ticker_and_date_range_api(
 
 if __name__ == '__main__':
     print("FastAPI 서버를 시작합니다. http://127.0.0.1:8000/docs 로 접속하세요.")
-    uvicorn.run("app.main:app", host="127.0.0.1", port=8000, reload=True, workers=1)
-
+    uvicorn.run("backend.app.main:app", host="127.0.0.1", port=8000, reload=True, workers=1)
