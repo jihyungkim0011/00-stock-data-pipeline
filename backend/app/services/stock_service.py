@@ -1,5 +1,6 @@
 import pandas as pd
-import os
+
+from app.core.config import settings
 
 class StockService:
     """
@@ -7,14 +8,16 @@ class StockService:
     """
     df_stocks: pd.DataFrame
 
-    def __init__(self, data_file_path: str = "nasdaq_all_stocks.csv"):
+    def __init__(self):
         """
-        서비스 초기화 시 CSV 파일을 로드합니다.
+        서비스 초기화 시 설정(settings)에 정의된 CSV 파일을 로드합니다.
         """
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        csv_path = os.path.join(script_dir, "..","..","..", "data", data_file_path)
-        
-        self.df_stocks = pd.DataFrame() # 초기 빈 DataFrame 설정
+        self.df_stocks = pd.DataFrame()  # 초기 빈 DataFrame 설정
+        csv_path = settings.DATA_FILE_PATH
+
+        if not csv_path:
+            print("경고: DATA_FILE_PATH가 .env 파일에 설정되지 않았습니다. 서비스는 데이터 없이 실행됩니다.")
+            return
 
         try:
             self.df_stocks = pd.read_csv(csv_path)
