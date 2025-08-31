@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
-# api/routers 폴더에 있는 stock_v2.py 파일에서 router 객체를 가져옵니다.
-from app.api.routers import stock_v2
+# api/routers 폴더에 있는 라우터 객체들을 가져옵니다.
+from app.api.routers import stock_v2, news
 
 # FastAPI 애플리케이션 인스턴스를 생성합니다.
 app = FastAPI(
@@ -10,9 +10,9 @@ app = FastAPI(
     version="2.0.0",
 )
 
-# stock_v2.py에서 정의한 라우터를 애플리케이션에 포함시킵니다.
-# 이렇게 하면 stock_v2.router에 정의된 모든 엔드포인트가 앱에 추가됩니다.
+# 정의한 라우터들을 애플리케이션에 포함시킵니다.
 app.include_router(stock_v2.router)
+app.include_router(news.router, prefix="/api", tags=["news"])
 
 @app.get("/", tags=["root"])
 async def read_root():
