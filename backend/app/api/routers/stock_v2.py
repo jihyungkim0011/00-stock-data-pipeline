@@ -1,5 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, Query
-from typing import List, Dict, Any, Optional
+from typing import List, Optional
+
+# --- 스키마 임포트 --- #
+from app.schemas.stock import StockPrice, Financials
+
 # --- 서비스 임포트 --- #
 from app.services.disclosure_service import DisclosureService
 from app.services.stock_service import StockService
@@ -7,7 +11,7 @@ from app.services.stock_service import StockService
 
 # --- 서비스 인스턴스 최적화 --- #
 # 애플리케이션 시작 시 서비스 인스턴스를 한 번만 생성합니다.
-# 이렇게 하면 API가 호출될 때마다 파일을 새로 읽는 것을 방지하여 성능이 향상됩니다.
+# API가 호출될 때마다 파일을 새로 읽는 것을 방지하여 성능이 향상됩니다.
 stock_service_instance = StockService()
 disclosure_service_instance = DisclosureService()
 
@@ -23,13 +27,13 @@ def get_disclosure_service() -> DisclosureService:
 # --- 라우터 설정 --- #
 router = APIRouter(
     prefix="/stocks",
-    tags=["stocks_v2_integrated"], # 새로운 태그로 통합 버전임을 명시
+    tags=["stocks_v2_integrated"], 
 )
 
 
 # --- API 엔드포인트 (DisclosureService 사용) --- #
 
-@router.get("/financials/annual", response_model=List[Dict[str, Any]])
+@router.get("/financials/annual", response_model=List[Financials])
 async def get_annual_financials(service: DisclosureService = Depends(get_disclosure_service)):
     """
     **[Disclosure] 연간 재무제표 데이터 조회**
@@ -41,7 +45,7 @@ async def get_annual_financials(service: DisclosureService = Depends(get_disclos
         raise HTTPException(status_code=404, detail="연간 재무 데이터를 찾을 수 없거나 로드에 실패했습니다.")
     return data.head().to_dict(orient="records")
 
-@router.get("/financials/quarterly", response_model=List[Dict[str, Any]])
+@router.get("/financials/quarterly", response_model=List[Financials])
 async def get_quarterly_financials(service: DisclosureService = Depends(get_disclosure_service)):
     """
     **[Disclosure] 분기별 재무제표 데이터 조회**
@@ -56,7 +60,7 @@ async def get_quarterly_financials(service: DisclosureService = Depends(get_disc
 
 # --- API 엔드포인트 (StockService 사용) --- #
 
-@router.get("/", response_model=List[Dict[str, Any]])
+@router.get("/", response_model=List[StockPrice])
 async def get_all_stocks(service: StockService = Depends(get_stock_service)):
     """
     **[Stock] 모든 주식 데이터 조회**
@@ -68,7 +72,7 @@ async def get_all_stocks(service: StockService = Depends(get_stock_service)):
         raise HTTPException(status_code=404, detail="주식 데이터를 찾을 수 없습니다.")
     return stocks
 
-@router.get("/{ticker}", response_model=List[Dict[str, Any]])
+@router.get("/{ticker}", response_model=List[StockPrice])
 async def get_stock_by_ticker(
     ticker: str, 
     service: StockService = Depends(get_stock_service),
