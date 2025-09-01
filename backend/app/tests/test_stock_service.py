@@ -2,10 +2,16 @@
 import pytest
 import pandas as pd
 from unittest.mock import patch
+import os
+import sys
+
+# backend 폴더를 sys.path에 추가하여 'app' 모듈을 찾을 수 있도록 합니다.
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
+
 from app.services.stock_service import StockService
 
-# 테스트에 사용할 가짜 데이터프레임을 생성합니다.
-# 실제 read_csv를 호출하는 대신 이 데이터가 반환될 것입니다.
+# 테스트에 사용할 가짜 데이터프레임을 생성합ㄲ니다.
+# 실제 read_csv를 호출하는 대신 이 데이터가 반환될 것입니다.ㄲ
 @pytest.fixture
 def mock_stock_data():
     """테스트용 가짜 주식 데이터프레임을 제공하는 Fixture"""

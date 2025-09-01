@@ -35,7 +35,10 @@ class StockService:
             WITH PriceDiff AS (
                 SELECT
                     *,
-                    "Close" - LAG("Close", 1, "Close") OVER (PARTITION BY "Symbol" ORDER BY "Date") AS diff
+                    "Close" - LAG("Close", 1, "Close") OVER (
+                        PARTITION BY "Symbol" 
+                        ORDER BY "Date"
+                    ) AS diff
                 FROM stocks
             ),
             GainsAndLosses AS (
@@ -47,13 +50,34 @@ class StockService:
             )
             SELECT
                 *,
-                AVG("Close") OVER (PARTITION BY "Symbol" ORDER BY "Date" ROWS BETWEEN 4 PRECEDING AND CURRENT ROW) AS MA_5,
-                AVG("Close") OVER (PARTITION BY "Symbol" ORDER BY "Date" ROWS BETWEEN 19 PRECEDING AND CURRENT ROW) AS MA_20,
-                AVG("Close") OVER (PARTITION BY "Symbol" ORDER BY "Date" ROWS BETWEEN 59 PRECEDING AND CURRENT ROW) AS MA_60,
+                AVG("Close") OVER (
+                    PARTITION BY "Symbol" 
+                    ORDER BY "Date" ROWS 
+                    BETWEEN 4 PRECEDING AND CURRENT ROW
+                ) AS MA_5,
+                AVG("Close") OVER (
+                    PARTITION BY "Symbol" 
+                    ORDER BY "Date" ROWS 
+                    BETWEEN 19 PRECEDING AND CURRENT ROW
+                ) AS MA_20,
+                AVG("Close") OVER (
+                    PARTITION BY "Symbol" 
+                    ORDER BY "Date" ROWS 
+                    BETWEEN 59 PRECEDING AND CURRENT ROW
+                ) AS MA_60,
+                
                 (
                     100 - (100 / (1 + (
-                        AVG(gain) OVER (PARTITION BY "Symbol" ORDER BY "Date" ROWS BETWEEN 13 PRECEDING AND CURRENT ROW) /
-                        NULLIF(AVG(loss) OVER (PARTITION BY "Symbol" ORDER BY "Date" ROWS BETWEEN 13 PRECEDING AND CURRENT ROW), 0)
+                        AVG(gain) OVER (
+                            PARTITION BY "Symbol" 
+                            ORDER BY "Date" ROWS 
+                            BETWEEN 13 PRECEDING AND CURRENT ROW
+                        ) /
+                        NULLIF(AVG(loss) OVER (
+                            PARTITION BY "Symbol" 
+                            ORDER BY "Date" ROWS 
+                            BETWEEN 13 PRECEDING AND CURRENT ROW
+                        ), 0)
                     )))
                 ) AS RSI_14
             FROM GainsAndLosses
