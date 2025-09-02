@@ -1,18 +1,10 @@
-import FinanceDataReader as fdr
 import pandas as pd
 import yfinance as yf
 import os
 import time
 from tqdm import tqdm
 
-def get_nasdaq_companies(limit=1000):
-    """
-    FinanceDataReader를 사용하여 나스닥 기업 목록을 가져옵니다.
-    :param limit: 가져올 기업의 최대 개수
-    :return: DataFrame으로 된 나스닥 기업 목록
-    """
-    df_nasdaq = fdr.StockListing('NASDAQ')
-    return df_nasdaq.head(limit)
+from companiesCollector import get_nasdaq_companies
 
 def process_all_financials(ticker, period='annual', start_date='2020-01-01'):
     """

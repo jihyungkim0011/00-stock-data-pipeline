@@ -1,4 +1,3 @@
-import FinanceDataReader as fdr
 import pandas as pd
 from newsapi import NewsApiClient
 import os
@@ -6,6 +5,8 @@ import time
 from tqdm import tqdm
 from datetime import datetime, timedelta
 import configparser
+
+from companiesCollector import get_nasdaq_companies
 
 def load_api_key(section="news_api",config_path='pipeline.conf'):
     """
@@ -18,19 +19,6 @@ def load_api_key(section="news_api",config_path='pipeline.conf'):
     except Exception as e:
         print(f"API 키를 불러오는 중 오류 발생: {e}")
         return None
-
-def get_nasdaq_companies(limit=1000):
-    """
-    FinanceDataReader를 사용하여 나스닥 기업 목록을 가져옵니다.
-    :param limit: 가져올 기업의 최대 개수
-    :return: DataFrame으로 된 나스닥 기업 목록
-    """
-    try:
-        df_nasdaq = fdr.StockListing('NASDAQ')
-        return df_nasdaq.head(limit)
-    except Exception as e:
-        print(f"나스닥 기업 목록을 가져오는 중 오류 발생: {e}")
-        return pd.DataFrame() # 오류 발생 시 빈 DataFrame 반환
 
 def get_news_from_api(query, start_date, end_date):
     """
