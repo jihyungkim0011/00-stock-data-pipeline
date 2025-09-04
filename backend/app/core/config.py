@@ -15,6 +15,7 @@ class Settings:
     ANNUAL_FINANCIALS_PATH: str = os.getenv("ANNUAL_FINANCIALS_PATH")
     QUARTERLY_FINANCIALS_PATH: str = os.getenv("QUARTERLY_FINANCIALS_PATH")
     NEWS_PATH: str = os.getenv("NEWS_PATH")
+    FINANCIALS_INFO_PATH: str = os.getenv("FINANCIALS_INFO_PATH")
 
 # 다른 모듈에서 쉽게 가져다 쓸 수 있도록 설정 객체의 인스턴스를 생성합니다.
 settings = Settings()

@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 
 # api/routers 폴더에 있는 라우터 객체들을 가져옵니다.
-from app.api.routers import stock_v2, news
+from app.api.routers import stock_v2, news, financial_info
 
 # FastAPI 애플리케이션 인스턴스를 생성합니다.
 app = FastAPI(
@@ -13,6 +13,7 @@ app = FastAPI(
 # 정의한 라우터들을 애플리케이션에 포함시킵니다.
 app.include_router(stock_v2.router)
 app.include_router(news.router, prefix="/api", tags=["news"])
+app.include_router(financial_info.router, prefix="/api", tags=["financial-info"])
 
 @app.get("/", tags=["root"])
 async def read_root():
