@@ -1,11 +1,12 @@
 import pandas as pd
 from typing import List, Dict, Any, Optional
+from pathlib import Path
 
 from app.core.config import settings
 
 class FinancialsInfoService:
     def __init__(self):
-        self.data_path = settings.FINANCIALS_INFO_PATH
+        self.data_path = Path(settings.FINANCIALS_INFO_PATH)
         self.df: Optional[pd.DataFrame] = None
     
     def load_csv_data(self) -> pd.DataFrame:
@@ -28,4 +29,7 @@ class FinancialsInfoService:
         if filtered_data.empty:
             return []
         
-        return filtered_data.to_dict('records')
+        # NaN 값을 None으로 변환하여 JSON 직렬화 오류 방지
+        processed_data = filtered_data.astype(object).where(pd.notnull(filtered_data), None)
+        
+        return processed_data.to_dict('records')
