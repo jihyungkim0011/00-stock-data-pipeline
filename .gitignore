@@ -5,6 +5,7 @@
 
 # files
 data/
+frontend/src/components/
 
 # conf files
 *.conf
