@@ -3,7 +3,7 @@
 
 # files
 data/
-frontend/src/components/
+# frontend/src/components/
 frontend/node_modules/
 
 # conf files
