@@ -160,7 +160,7 @@ export function TargetPriceChart({ selectedCompanies }: TargetPriceChartProps) {
                       strokeWidth={2}
                       label={{ 
                         value: `현재가 ${targetData.currentPrice.toLocaleString()}원`, 
-                        position: "topLeft",
+                        position: "insideTopLeft",
                         style: { fontSize: '10px', fill: '#ef4444' }
                       }}
                     />

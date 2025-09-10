@@ -238,7 +238,7 @@
   }
 
   img, svg, video, canvas, audio, iframe, embed, object {
-    vertical-align: middle;
+    /* vertical-align: middle; */
     display: block;
   }
 
@@ -717,6 +717,7 @@
     -webkit-box-orient: vertical;
     display: -webkit-box;
     overflow: hidden;
+    line-clamp: 1;
   }
 
   .line-clamp-2 {
@@ -724,6 +725,7 @@
     -webkit-box-orient: vertical;
     display: -webkit-box;
     overflow: hidden;
+    line-clamp: 1;
   }
 
   .block {
@@ -3286,6 +3288,7 @@
     -webkit-box-orient: vertical;
     display: -webkit-box;
     overflow: hidden;
+    line-clamp: 1;
   }
 
   :is(.\*\:data-\[slot\=select-value\]\:flex > *)[data-slot="select-value"] {
