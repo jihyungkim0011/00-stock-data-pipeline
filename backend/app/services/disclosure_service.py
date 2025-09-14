@@ -21,7 +21,7 @@ class DisclosureService:
 
         반환값:
             Optional[pd.DataFrame]: 연간 재무 데이터가 담긴 pandas DataFrame, 
-                                     파일을 찾거나 읽을 수 없는 경우 None을 반환합니다.
+                                    파일을 찾거나 읽을 수 없는 경우 None을 반환합니다.
         """
         try:
             if not self.annual_path or not os.path.exists(self.annual_path):
@@ -39,7 +39,7 @@ class DisclosureService:
 
         반환값:
             Optional[pd.DataFrame]: 분기별 재무 데이터가 담긴 pandas DataFrame,
-                                     파일을 찾거나 읽을 수 없는 경우 None을 반환합니다.
+                                    파일을 찾거나 읽을 수 없는 경우 None을 반환합니다.
         """
         try:
             if not self.quarterly_path or not os.path.exists(self.quarterly_path):
