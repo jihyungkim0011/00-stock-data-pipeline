@@ -140,13 +140,13 @@ def fetch_and_save_historical_info(companies_df: pd.DataFrame, years: int, outpu
     df = df.reindex(columns=columns_order)
 
     file_path = os.path.join(output_dir, output_filename)
-    df.to_csv(file_path, index=False, encoding='utf-8-sig')
+    df.to_csv(file_path, index=False, encoding='utf-8')
     print(f"\n모든 재무 정보가 {file_path}에 저장되었습니다.")
 
 
 if __name__ == '__main__':
     # NASDAQ 회사 목록을 DataFrame으로 가져옵니다.
-    nasdaq_companies_df = get_nasdaq_companies(limit=5)
+    nasdaq_companies_df = get_nasdaq_companies(limit=10)
     
     if nasdaq_companies_df.empty:
         print("NASDAQ 회사 목록을 가져오지 못했습니다. 작업을 중단합니다.")

@@ -63,21 +63,21 @@ def fetch_and_save_data(stock_list_df, start_date='2020-01-01'):
     # 모든 데이터 수집이 완료된 후, 하나의 CSV 파일로 저장합니다.
     if not all_stocks_df.empty:
         file_path = os.path.join(output_dir, 'nasdaq_all_stocks.csv')
-        all_stocks_df.to_csv(file_path, encoding='utf-8-sig', index=True)
+        all_stocks_df = all_stocks_df.reset_index(names=['Date'])
+        all_stocks_df.to_csv(file_path, encoding='utf-8', index=False)
         print(f"\n모든 나스닥 기업의 데이터가 {file_path}에 성공적으로 저장되었습니다.")
     else:
         print("\n데이터를 저장할 내용이 없습니다.")
 
 
 if __name__ == '__main__':
-    # 1. 나스닥 기업 1000개 리스트 가져오기
     print("나스닥 기업 목록을 가져오는 중...")
-    nasdaq_companies_df = get_nasdaq_companies(limit=5)
+    nasdaq_companies_df = get_nasdaq_companies(limit=10)
     
     if not nasdaq_companies_df.empty:
         # 2, 3, 4. 주식 데이터 수집 및 CSV로 저장
         fetch_and_save_data(nasdaq_companies_df)
     else:
-        print("나스닥 기업 목록을 가져오는 데 실패했습니다.")
+        print("나스닥 기업 주식목록을 가져오는 데 실패했습니다.")
     
-    print("모든 작업이 완료되었습니다.")
+    print("주식목록 데이터의 모든 작업이 완료되었습니다.")

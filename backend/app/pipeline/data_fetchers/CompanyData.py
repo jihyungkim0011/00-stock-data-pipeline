@@ -2,7 +2,7 @@ import FinanceDataReader as fdr
 import yfinance as yf
 import os
 
-def fetch_nasdaq_companies_hybrid():
+def fetch_nasdaq_companies_field():
     """
     Fetches NASDAQ company listings using a hybrid approach:
     - fdr for Name, Symbol, Industry.
@@ -30,6 +30,7 @@ def fetch_nasdaq_companies_hybrid():
                 sector = info.get('sector', 'N/A') # Provide a default value
                 sectors.append(sector)
             except Exception as e:
+                print(f"{e}: {symbol} failed to fetch - skipping.")
                 sectors.append('N/A') # Append default value on error
             
             if (i + 1) % 100 == 0:
@@ -49,7 +50,7 @@ def fetch_nasdaq_companies_hybrid():
             
         output_path = os.path.join(output_dir, 'nasdaq_companies_hybrid.csv')
 
-        nasdaq_df.to_csv(output_path, index=False, encoding='utf-8-sig')
+        nasdaq_df.to_csv(output_path, index=False, encoding='utf-8')
 
         print(f"\nSuccessfully saved combined company data to {output_path}")
 
@@ -57,4 +58,4 @@ def fetch_nasdaq_companies_hybrid():
         print(f"An error occurred: {e}")
 
 if __name__ == "__main__":
-    fetch_nasdaq_companies_hybrid()
+    fetch_nasdaq_companies_field()

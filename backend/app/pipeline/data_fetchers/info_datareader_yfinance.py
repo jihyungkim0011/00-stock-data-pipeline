@@ -68,7 +68,7 @@ def fetch_and_save_financial_info(ticker_list: list, output_filename: str = 'nas
 
     # CSV 파일로 저장
     file_path = os.path.join(output_dir, output_filename)
-    df.to_csv(file_path, index=False, encoding='utf-8-sig')
+    df.to_csv(file_path, index=False, encoding='utf-8')
     print(f"\n모든 재무 정보가 {file_path}에 저장되었습니다.")
 
 

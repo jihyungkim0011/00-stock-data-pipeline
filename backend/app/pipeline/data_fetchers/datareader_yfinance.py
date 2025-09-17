@@ -99,14 +99,14 @@ def fetch_and_save_all_financial_data(stock_list_df, start_date='2020-01-01'):
     # 모든 데이터 수집 후 CSV 파일로 저장
     if not all_annual_df.empty:
         file_path_annual = os.path.join(output_dir, 'nasdaq_financials_annual_all.csv')
-        all_annual_df.to_csv(file_path_annual, index=False, encoding='utf-8-sig')
+        all_annual_df.to_csv(file_path_annual, index=False, encoding='utf-8')
         print(f"\n모든 연간 재무 데이터가 {file_path_annual}에 저장되었습니다.")
     else:
         print("\n저장할 연간 재무 데이터가 없습니다.")
 
     if not all_quarterly_df.empty:
         file_path_quarterly = os.path.join(output_dir, 'nasdaq_financials_quarterly_all.csv')
-        all_quarterly_df.to_csv(file_path_quarterly, index=False, encoding='utf-8-sig')
+        all_quarterly_df.to_csv(file_path_quarterly, index=False, encoding='utf-8')
         print(f"모든 분기별 재무 데이터가 {file_path_quarterly}에 저장되었습니다.")
     else:
         print("저장할 분기별 재무 데이터가 없습니다.")
@@ -114,7 +114,7 @@ def fetch_and_save_all_financial_data(stock_list_df, start_date='2020-01-01'):
 if __name__ == '__main__':
     # 1. 나스닥 기업 목록 가져오기
     print("나스닥 기업 목록을 가져오는 중...")
-    nasdaq_companies_df = get_nasdaq_companies(limit=5) # 테스트를 위해 5개만 가져옵니다.
+    nasdaq_companies_df = get_nasdaq_companies(limit=10) # 테스트를 위해 5개만 가져옵니다.
     
     if not nasdaq_companies_df.empty:
         # 데이터 수집 및 CSV로 저장

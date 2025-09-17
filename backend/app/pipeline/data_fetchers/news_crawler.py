@@ -34,7 +34,8 @@ def get_news_from_api(query, start_date, end_date):
         if days > 30:
             print(f"경고: NewsAPI 무료 플랜은 최대 30일 이내의 뉴스만 제공합니다. 검색 기간을 {days}일에서 30일로 조정합니다.")
             start_date = end_date - timedelta(days=30)
-            
+
+        NEWS_API_KEY = load_api_key()
         newsapi = NewsApiClient(api_key=NEWS_API_KEY)
         all_articles = newsapi.get_everything(
             q=query,
@@ -102,22 +103,18 @@ def fetch_and_save_news_urls(stock_list_df, days=30):
     # 모든 데이터 수집 후 하나의 CSV 파일로 저장
     if not all_news_df.empty:
         file_path = os.path.join(output_dir, 'nasdaq_news_all.csv')
-        all_news_df.to_csv(file_path, index=False, encoding='utf-8-sig')
+        all_news_df.to_csv(file_path, index=False, encoding='utf-8')
         print(f"\n모든 나스닥 기업의 뉴스 URL이 {file_path}에 성공적으로 저장되었습니다.")
     else:
         print("\n저장할 뉴스 데이터가 없습니다.")
 
 if __name__ == '__main__':
-    NEWS_API_KEY = load_api_key()
-    if not NEWS_API_KEY:
-        print("API 키를 불러오지 못했습니다. 프로그램을 종료합니다.")
+    print("나스닥 기업 목록을 가져오는 중...")
+    nasdaq_companies_df = get_nasdaq_companies(limit=10)
+    
+    if not nasdaq_companies_df.empty:
+        fetch_and_save_news_urls(nasdaq_companies_df, days=10)
     else:
-        print("나스닥 기업 목록을 가져오는 중...")
-        nasdaq_companies_df = get_nasdaq_companies(limit=5)
-        
-        if not nasdaq_companies_df.empty:
-            fetch_and_save_news_urls(nasdaq_companies_df, days=5)
-        else:
-            print("나스닥 기업 목록을 가져오는 데 실패했습니다.")
+        print("나스닥 기업 목록을 가져오는 데 실패했습니다.")
             
     print("모든 작업이 완료되었습니다.")
