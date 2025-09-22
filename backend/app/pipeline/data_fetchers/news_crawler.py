@@ -103,7 +103,8 @@ def fetch_and_save_news_urls(stock_list_df, days=30):
     # 모든 데이터 수집 후 하나의 CSV 파일로 저장
     if not all_news_df.empty:
         file_path = os.path.join(output_dir, 'nasdaq_news_all.csv')
-        all_news_df.to_csv(file_path, index=False, encoding='utf-8')
+        all_news_df.index.name = 'id'
+        all_news_df.to_csv(file_path, index=True, encoding='utf-8')
         print(f"\n모든 나스닥 기업의 뉴스 URL이 {file_path}에 성공적으로 저장되었습니다.")
     else:
         print("\n저장할 뉴스 데이터가 없습니다.")

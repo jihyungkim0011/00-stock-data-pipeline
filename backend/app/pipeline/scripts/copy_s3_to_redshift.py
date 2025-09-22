@@ -4,41 +4,48 @@ import os
 
 def load_config(config_path='pipeline.conf'):
     """Loads configuration from an INI file."""
-    config = configparser.ConfigParser()
+    parser = configparser.ConfigParser()
     # Correct the path to be relative to this script's location
     
     
     if not os.path.exists(config_path):
         raise FileNotFoundError(f"Configuration file not found at: {config_path}")
-        
-    config.read(config_path)
-    return config['redshift_copy']
+
+    try:
+        parser.read(config_path)
+        region_name = parser.get["redshift_copy","region_name"]
+        workgroup_name = parser.get["redshift_copy",'workgroup_name']
+        database_name = parser.get["redshift_copy",'database_name']
+        db_user = parser.get["redshift_copy",'db_user']
+        b_account_iam_role_arn = parser.get["redshift_copy",'b_account_iam_role_arn']
+        a_account_iam_role_arn = parser.get["redshift_copy",'a_account_iam_role_arn']
+        s3_bucket_name = parser.get["redshift_copy",'s3_bucket_name']
+        s3_file_path = parser.get["redshift_copy",'s3_file_path']
+        target_table = parser.get["redshift_copy",'target_table']
+    
+    except (FileNotFoundError, KeyError) as e:
+        print(f"Error loading or parsing configuration: {e}")
+        return
+
+    return region_name, workgroup_name, database_name, db_user, b_account_iam_role_arn, a_account_iam_role_arn, s3_bucket_name, s3_file_path, target_table
 
 def copy_s3_to_redshift():
     """
     Copies data from a CSV file in S3 to a Redshift table using
     configuration from pipeline.conf.
     """
-    try:
-        # Load configuration
-        config = load_config()
-        
-        region_name = config['region_name']
-        workgroup_name = config['workgroup_name']
-        database_name = config['database_name']
-        db_user = config['db_user']
-        b_account_iam_role_arn = config['b_account_iam_role_arn']
-        a_account_iam_role_arn = config['a_account_iam_role_arn']
-        s3_bucket_name = config['s3_bucket_name']
-        s3_file_path = config['s3_file_path']
-        target_table = config['target_table']
 
-    except (FileNotFoundError, KeyError) as e:
-        print(f"Error loading or parsing configuration: {e}")
+    # Load configuration
+    region_name, workgroup_name, database_name, db_user, b_account_iam_role_arn, a_account_iam_role_arn, s3_bucket_name, s3_file_path, target_table = load_config()
+
+    if not all([region_name, workgroup_name, database_name, db_user, b_account_iam_role_arn, a_account_iam_role_arn, s3_bucket_name, s3_file_path, target_table]):
+        print("Missing configuration values.")
         return
 
     # Create a Boto3 client for Redshift Data API
-    client = boto3.client('redshift-data', region_name=region_name)
+    client = boto3.client(
+        'redshift-data', 
+        region_name=region_name)
 
     # Construct the COPY command
     # Note: The f-string formatting for IAM_ROLE was incorrect. It should be a single string with two ARNs.

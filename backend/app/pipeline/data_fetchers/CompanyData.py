@@ -50,7 +50,8 @@ def fetch_nasdaq_companies_field():
             
         output_path = os.path.join(output_dir, 'nasdaq_companies_hybrid.csv')
 
-        nasdaq_df.to_csv(output_path, index=False, encoding='utf-8')
+        nasdaq_df.index.name = 'id'
+        nasdaq_df.to_csv(output_path, index=True, encoding='utf-8')
 
         print(f"\nSuccessfully saved combined company data to {output_path}")
 
