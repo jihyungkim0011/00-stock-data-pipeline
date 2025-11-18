@@ -4,7 +4,7 @@
 # folders
 data/
 frontend/node_modules/
-backend/app/pipeline/scripts/
+backend/app/pipeline/glue_scripts/
 
 # conf files
 *.conf
