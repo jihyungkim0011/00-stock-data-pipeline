@@ -1,8 +1,9 @@
 import configparser
 import boto3
 import os
-import time  # 대기 시간을 위해 추가
+import time
 import sys
+from typing import Dict, Any, List
 
 def load_config(config_path='pipeline.conf'):
     """설정 파일을 로드합니다."""
@@ -14,15 +15,19 @@ def load_config(config_path='pipeline.conf'):
 
     try:
         parser.read(config_path)
-        config = parser["redshift_copy"] # 섹션 전체를 가져옴
+        config = parser["redshift_copy"] 
         
-        # 필요한 키값들이 다 있는지 확인
-        required_keys = ["region_name", "workgroup_name", "database_name", "db_user", 
-                         "b_account_iam_role_arn", "s3_bucket_name", "s3_file_path", "target_table"]
-        
-        # 설정값 딕셔너리 생성
-        conf_data = {key: config.get(key) for key in required_keys}
-        
+        conf_data = {
+            "region_name": config.get("region_name"),
+            "workgroup_name": config.get("workgroup_name"),
+            "database_name": config.get("database_name"),
+            "b_account_iam_role_arn": config.get("b_account_iam_role_arn"),
+            "b_account_secret_arn": config.get("b_account_secret_arn"),
+            "s3_bucket_name": config.get("s3_bucket_name"),
+            "s3_file_path": config.get("s3_file_path"),
+            "target_table": config.get("target_table"),
+        }
+
         # AWS 자격증명도 함께 로드
         creds = parser["B_aws_credentials"]
         conf_data['aws_access_key'] = creds.get('access_key')
@@ -60,14 +65,14 @@ def copy_s3_to_redshift():
     conf = load_config()
 
     # 2. Redshift Data API 클라이언트 생성
-    client = boto3.client('redshift-data', 
-                          region_name=conf['region_name'],
-                          aws_access_key_id=conf['aws_access_key'],      # 여기!
-                          aws_secret_access_key=conf['aws_secret_key'])
-
-    # 3. COPY 명령어 생성 (수정됨)
-    # - IAM_ROLE: B계정 역할 하나만 사용
-    # - REGION: S3 리전을 명시 (여기서는 Redshift와 같다고 가정하고 설정값 사용)
+    client = boto3.client(
+        'redshift-data', 
+        region_name=conf['region_name'],
+        aws_access_key_id=conf['aws_access_key'],
+        aws_secret_access_key=conf['aws_secret_key'],
+    )
+    
+    # 3. COPY 명령어 생성
     copy_command = f"""
         COPY {conf['target_table']}
         FROM 's3://{conf['s3_bucket_name']}/{conf['s3_file_path']}'
@@ -82,15 +87,13 @@ def copy_s3_to_redshift():
         
         # 4. 실행 (비동기)
         response = client.execute_statement(
-            WorkgroupName=conf['workgroup_name'],
+            WorkgroupName=conf['workgroup_name'],    
             Database=conf['database_name'],
-            DbUser=conf['db_user'], # Secrets Manager를 쓴다면 SecretArn으로 교체 권장
+            SecretArn=conf['b_account_secret_arn'],
             Sql=copy_command
         )
-        
         query_id = response['Id']
         
-        # 5. 결과 대기 및 확인 (중요!)
         check_query_status(client, query_id)
 
     except Exception as e:
