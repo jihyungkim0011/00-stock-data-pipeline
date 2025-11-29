@@ -114,7 +114,8 @@ def copy_s3_to_redshift():
             IAM_ROLE '{conf['b_account_iam_role_arn']}'
             REGION '{conf['region_name']}'
             {file_format}
-            IGNOREHEADER {ignore_header};
+            IGNOREHEADER {ignore_header}
+            TIMEFORMAT 'auto';
         """
         
         try:
